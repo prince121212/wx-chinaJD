@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { SupabaseService } from '@/lib/supabase'
 
 // Mock商品详情数据
 const mockProductDetail = {
@@ -115,53 +115,34 @@ export async function GET(
 ) {
   try {
     const spuId = params.id
+    console.log('获取产品详情 - 使用Supabase:', spuId)
 
-    // 尝试从数据库获取数据，如果失败则使用mock数据
+    // 尝试从Supabase获取数据，如果失败则使用mock数据
     try {
-      const product = await prisma.product.findFirst({
-        where: {
-          spuId,
-          status: 1,
-        },
-        include: {
-          category: {
-            select: {
-              id: true,
-              name: true,
-            }
-          },
-          skus: {
-            where: { status: 1 },
-            select: {
-              id: true,
-              skuId: true,
-              price: true,
-              originPrice: true,
-              stockQuantity: true,
-              specInfo: true,
-            }
-          }
-        },
-      })
+      const product = await SupabaseService.getProductBySpuId(spuId)
 
       if (!product) {
-        // 如果数据库中没有找到，返回mock数据
+        // 如果Supabase中没有找到，返回mock数据
+        console.log('产品未找到，返回mock数据')
         return NextResponse.json({
           success: true,
           data: { ...mockProductDetail, spuId }
         })
       }
 
+      // 获取产品的SKU数据
+      const skus = await SupabaseService.getProductSkus(product.id)
+
       // 转换为mock数据格式
-      const prices = product.skus.map(sku => sku.price)
-      const originPrices = product.skus.map(sku => sku.originPrice)
+      const prices = skus.map(sku => parseFloat(sku.price))
+      const salePrices = skus.map(sku => sku.salePrice ? parseFloat(sku.salePrice) : parseFloat(sku.price))
       const images = product.images ? JSON.parse(product.images) : [product.primaryImage]
 
       // 从SKU规格信息中提取specList
       const specMap = new Map()
-      product.skus.forEach(sku => {
-        if (sku.specInfo) {
-          const specInfo = JSON.parse(sku.specInfo)
+      skus.forEach(sku => {
+        if (sku.specs) {
+          const specInfo = JSON.parse(sku.specs)
           specInfo.forEach(spec => {
             if (!specMap.has(spec.specId)) {
               specMap.set(spec.specId, {
@@ -185,8 +166,8 @@ export async function GET(
       })
 
       const formattedProduct = {
-        saasId: '88888888',
-        storeId: '1000',
+        saasId: product.saasId || '88888888',
+        storeId: product.storeId || '1000',
         spuId: product.spuId,
         title: product.title,
         primaryImage: product.primaryImage,
@@ -194,26 +175,26 @@ export async function GET(
         video: null,
         available: 1,
         minSalePrice: Math.min(...prices),
-        minLinePrice: Math.min(...prices),
+        minLinePrice: Math.min(...salePrices),
         maxSalePrice: Math.max(...prices),
-        maxLinePrice: Math.max(...originPrices),
-        spuStockQuantity: product.skus.reduce((sum, sku) => sum + sku.stockQuantity, 0),
-        soldNum: Math.floor(Math.random() * 1000) + 100,
-        isPutOnSale: 1,
-        categoryIds: [product.categoryId],
+        maxLinePrice: Math.max(...salePrices),
+        spuStockQuantity: skus.reduce((sum, sku) => sum + sku.stock, 0),
+        soldNum: product.soldCount || 0,
+        isPutOnSale: product.status,
+        categoryIds: product.categoryId ? [product.categoryId] : [],
         specList: Array.from(specMap.values()),
-        skuList: product.skus.map(sku => ({
+        skuList: skus.map(sku => ({
           skuId: sku.skuId,
-          skuImage: product.primaryImage,
-          specInfo: sku.specInfo ? JSON.parse(sku.specInfo) : [],
+          skuImage: sku.image || product.primaryImage,
+          specInfo: sku.specs ? JSON.parse(sku.specs) : [],
           priceInfo: [
-            { priceType: 1, price: sku.price.toString(), priceTypeName: null },
-            { priceType: 2, price: sku.originPrice.toString(), priceTypeName: null },
+            { priceType: 1, price: sku.price, priceTypeName: null },
+            { priceType: 2, price: sku.salePrice || sku.price, priceTypeName: null },
           ],
           stockInfo: {
-            stockQuantity: sku.stockQuantity,
+            stockQuantity: sku.stock,
             safeStockQuantity: 0,
-            soldQuantity: 0,
+            soldQuantity: sku.soldCount || 0,
           },
           weight: { value: null, unit: 'KG' },
           volume: null,
@@ -231,9 +212,9 @@ export async function GET(
       })
 
     } catch (dbError) {
-      console.warn('Database query failed, using mock data:', dbError)
+      console.warn('Supabase query failed, using mock data:', dbError)
 
-      // 数据库查询失败，返回mock数据
+      // Supabase查询失败，返回mock数据
       return NextResponse.json({
         success: true,
         data: { ...mockProductDetail, spuId }

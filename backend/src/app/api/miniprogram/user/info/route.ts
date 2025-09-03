@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 
-// 获取用户信息
+// 获取用户信息 - 暂时禁用，使用Supabase后需要重新实现
 export async function GET(request: NextRequest) {
   try {
     const token = request.headers.get('authorization')
@@ -12,44 +11,27 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // 使用测试用户
-    const user = await prisma.user.findFirst({
-      where: { openid: 'test_user_123' },
-      select: {
-        id: true,
-        nickname: true,
-        avatarUrl: true,
-        phone: true,
-        gender: true,
-        createdAt: true,
-      }
-    })
+    console.log('用户信息功能暂时禁用 - 需要Supabase实现')
 
-    if (!user) {
-      return NextResponse.json(
-        { success: false, msg: '用户不存在' },
-        { status: 404 }
-      )
+    // 返回模拟用户信息
+    const user = {
+      id: 'test_user_123',
+      nickname: '测试用户',
+      avatarUrl: 'https://pub-7d345f4cf2334fce864509d66ec976f3.r2.dev/JD/victoria-druc-qAYoFgD_-5E-unsplash.jpg',
+      phone: '138****8888',
+      gender: 1,
+      createdAt: new Date().toISOString(),
     }
 
-    // 获取用户统计信息
-    const [orderCounts, couponCount] = await Promise.all([
-      prisma.order.groupBy({
-        by: ['status'],
-        where: { userId: user.id },
-        _count: { _all: true }
-      }),
-      prisma.userCoupon.count({
-        where: { userId: user.id, status: 1 }
-      })
-    ])
-
+    // 返回模拟统计信息
     const orderStats = {
-      pending: orderCounts.find(c => c.status === 1)?._count._all || 0, // 待付款
-      paid: orderCounts.find(c => c.status === 2)?._count._all || 0, // 已付款
-      shipped: orderCounts.find(c => c.status === 3)?._count._all || 0, // 已发货
-      completed: orderCounts.find(c => c.status === 4)?._count._all || 0, // 已完成
+      pending: 0, // 待付款
+      paid: 0, // 已付款
+      shipped: 0, // 已发货
+      completed: 0, // 已完成
     }
+
+    const couponCount = 0
 
     return NextResponse.json({
       success: true,
@@ -76,7 +58,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// 更新用户信息
+// 更新用户信息 - 暂时禁用，使用Supabase后需要重新实现
 export async function PUT(request: NextRequest) {
   try {
     const token = request.headers.get('authorization')
@@ -87,29 +69,11 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    const userId = token.replace('user_', '')
-    const { nickname, phone, gender } = await request.json()
-
-    const updateData: any = {}
-    if (nickname) updateData.nickname = nickname
-    if (phone) updateData.phone = phone
-    if (gender !== undefined) updateData.gender = gender
-
-    const user = await prisma.user.update({
-      where: { id: userId },
-      data: updateData,
-      select: {
-        id: true,
-        nickname: true,
-        avatarUrl: true,
-        phone: true,
-        gender: true,
-      }
-    })
+    console.log('更新用户信息功能暂时禁用 - 需要Supabase实现')
 
     return NextResponse.json({
-      success: true,
-      data: user
+      success: false,
+      msg: '更新功能暂时不可用'
     })
   } catch (error) {
     console.error('Update user info error:', error)

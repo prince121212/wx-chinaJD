@@ -1,30 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 
-// 获取地址列表
+// 获取地址列表 - 暂时禁用，使用Supabase后需要重新实现
 export async function GET(request: NextRequest) {
   try {
-    const token = request.headers.get('authorization')
-    if (!token) {
-      return NextResponse.json(
-        { success: false, msg: '请先登录' },
-        { status: 401 }
-      )
-    }
+    console.log('地址列表功能暂时禁用 - 需要Supabase实现')
 
-    const userId = token.replace('user_', '')
-
-    const addresses = await prisma.address.findMany({
-      where: { userId },
-      orderBy: [
-        { isDefault: 'desc' },
-        { createdAt: 'desc' }
-      ]
-    })
-
+    // 返回空地址列表
     return NextResponse.json({
       success: true,
-      data: addresses
+      data: []
     })
   } catch (error) {
     console.error('Get addresses error:', error)

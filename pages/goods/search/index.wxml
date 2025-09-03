@@ -4,7 +4,7 @@
     t-class-input="t-search__input"
     value="{{searchValue}}"
     leftIcon=""
-    placeholder="iPhone12pro"
+    placeholder="精品手绘茶具"
     bind:submit="handleSubmit"
     focus
   >

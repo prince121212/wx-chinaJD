@@ -6,7 +6,7 @@
     t-class-input="t-search__input"
     value="{{keywords}}"
     leftIcon=""
-    placeholder="iPhone12pro"
+    placeholder="精品手绘茶具"
     bind:submit="handleSubmit"
   >
     <t-icon slot="left-icon" prefix="wr" name="search" size="40rpx" color="#bbb" />

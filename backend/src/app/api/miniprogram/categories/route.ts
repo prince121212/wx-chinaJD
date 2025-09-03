@@ -1,26 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { SupabaseService } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('获取分类数据')
+    console.log('获取分类数据 - 使用Supabase')
 
-    // 从数据库查询分类
-    const categories = await prisma.category.findMany({
-      where: {
-        status: 1, // 只查询启用的分类
-      },
-      orderBy: {
-        sortOrder: 'asc',
-      },
-      include: {
-        _count: {
-          select: { products: true }
-        }
-      }
-    })
+    // 从Supabase查询分类
+    const categories = await SupabaseService.getCategories()
 
-    console.log('数据库查询结果:', {
+    console.log('Supabase查询结果:', {
       分类数量: categories.length
     })
 
@@ -52,8 +40,8 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Get categories error:', error)
 
-    // 如果数据库查询失败，返回mock数据
-    console.log('数据库查询失败，使用mock数据')
+    // 如果Supabase查询失败，返回mock数据
+    console.log('Supabase查询失败，使用mock数据')
     const mockCategories = [
       {
         groupId: '24948',
