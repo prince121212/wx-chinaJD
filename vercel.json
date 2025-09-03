@@ -8,16 +8,9 @@
     { "src": "/(.*)", "dest": "backend/$1" }
   ],
   "env": {
-    "DATABASE_URL": "@database_url",
-    "NEXT_PUBLIC_SUPABASE_URL": "@supabase_url",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase_anon_key",
-    "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_key",
-    "WECHAT_APPID": "@wechat_appid",
-    "WECHAT_SECRET": "@wechat_secret",
-    "STORAGE_ENDPOINT": "@storage_endpoint",
-    "STORAGE_ACCESS_KEY": "@storage_access_key",
-    "STORAGE_SECRET_KEY": "@storage_secret_key",
-    "STORAGE_BUCKET": "@storage_bucket",
-    "STORAGE_PUBLIC_URL": "@storage_public_url"
+    "DATABASE_URL": "postgresql://postgres:AAaa4598%40%40123@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1",
+    "NEXT_PUBLIC_SUPABASE_URL": "https://zhlxqqtahpamntbdtbmf.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpobHhxcXRhaHBhbW50YmR0Ym1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5NjM2MzksImV4cCI6MjA3MTUzOTYzOX0.TtLbRbreNB9L93Al-CZymhZ2uDZJHKw1s2lux_PcIcc",
+    "SUPABASE_SERVICE_ROLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpobHhxcXRhaHBhbW50YmR0Ym1mIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTk2MzYzOSwiZXhwIjoyMDcxNTM5NjM5fQ.aH8gH_RCnOhds7dKBS-IYvzSqhWjxyuhQXERfwuPHjc"
   }
 }
