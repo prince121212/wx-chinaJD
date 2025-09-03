@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(/E:\\mnt\\e\\code\\wx\\chinaJD\\wx-app/**)",
+      "Bash(npm install)",
+      "Bash(npm run db:generate)",
+      "Bash(npm run db:push)",
+      "Bash(npx dotenv -e .env.local -- prisma db push)",
+      "Bash(npm install --save-dev dotenv-cli)",
+      "Bash(npm run dev)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(curl -s http://localhost:3000/settings)",
+      "Bash(npx dotenv -e .env.local -- prisma generate)",
+      "Bash(npx dotenv -e .env.local -- prisma db push --accept-data-loss)",
+      "Bash(npx dotenv -e .env.local -- prisma db push --force-reset --accept-data-loss)",
+      "Bash(curl -s http://localhost:3001/api/miniprogram/products)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

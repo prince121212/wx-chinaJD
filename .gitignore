@@ -42,3 +42,19 @@ temp/
 *.bak
 *.backup
 *.old
+
+# 后端相关
+backend/.next/
+backend/.env.local
+backend/.env.production
+backend/dev.db
+backend/dev.db-journal
+
+# Vercel
+.vercel
+
+# 环境变量
+.env
+.env.local
+.env.production
+.env.staging

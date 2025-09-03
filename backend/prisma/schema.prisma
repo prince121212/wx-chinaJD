@@ -1,0 +1,240 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// 用户表
+model User {
+  id         String   @id @default(cuid())
+  openid     String   @unique
+  unionid    String?  @unique
+  nickname   String?
+  avatarUrl  String?  @map("avatar_url")
+  phone      String?
+  gender     Int?     @default(0) // 0: 未知, 1: 男, 2: 女
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  // 关联关系
+  addresses    Address[]
+  carts        Cart[]
+  orders       Order[]
+  userCoupons  UserCoupon[]
+
+  @@map("users")
+}
+
+// 分类表
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  parentId  String?  @map("parent_id")
+  image     String?
+  sortOrder Int      @default(0) @map("sort_order")
+  status    Int      @default(1) // 1: 启用, 0: 禁用
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // 关联关系
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryTree")
+  products Product[]
+
+  @@map("categories")
+}
+
+// 商品表
+model Product {
+  id           String   @id @default(cuid())
+  spuId        String   @unique @map("spu_id")
+  title        String
+  description  String?
+  categoryId   String   @map("category_id")
+  primaryImage String   @map("primary_image")
+  images       String?  // 商品图片数组 (JSON字符串)
+  status       Int      @default(1) // 1: 上架, 0: 下架
+  sortOrder    Int      @default(0) @map("sort_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // 关联关系
+  category Category     @relation(fields: [categoryId], references: [id])
+  skus     ProductSku[]
+
+  @@map("products")
+}
+
+// 商品SKU表
+model ProductSku {
+  id            String   @id @default(cuid())
+  skuId         String   @unique @map("sku_id")
+  productId     String   @map("product_id")
+  price         Int      // 价格(以分为单位)
+  originPrice   Int      @map("origin_price") // 原价(以分为单位)
+  stockQuantity Int      @map("stock_quantity")
+  specInfo      String?  @map("spec_info") // 规格信息 (JSON字符串)
+  status        Int      @default(1) // 1: 启用, 0: 禁用
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // 关联关系
+  product    Product     @relation(fields: [productId], references: [id])
+  carts      Cart[]
+  orderItems OrderItem[]
+
+  @@map("product_skus")
+}
+
+// 购物车表
+model Cart {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  skuId     String   @map("sku_id")
+  quantity  Int
+  selected  Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // 关联关系
+  user User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sku  ProductSku @relation(fields: [skuId], references: [id])
+
+  @@unique([userId, skuId])
+  @@map("carts")
+}
+
+// 订单表
+model Order {
+  id             String   @id @default(cuid())
+  orderNo        String   @unique @map("order_no")
+  userId         String   @map("user_id")
+  status         Int      @default(1) @map("status") // 1: 待付款, 2: 已付款, 3: 已发货, 4: 已完成, 5: 已取消
+  totalAmount    Int      @map("total_amount") // 总金额(以分为单位)
+  discountAmount Int      @default(0) @map("discount_amount") // 优惠金额(以分为单位)
+  actualAmount   Int      @map("actual_amount") // 实付金额(以分为单位)
+  addressInfo    String   @map("address_info") // 收货地址信息 (JSON字符串)
+  remark         String?
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // 关联关系
+  user       User        @relation(fields: [userId], references: [id])
+  orderItems OrderItem[]
+
+  @@map("orders")
+}
+
+// 订单明细表
+model OrderItem {
+  id         String   @id @default(cuid())
+  orderId    String   @map("order_id")
+  skuId      String   @map("sku_id")
+  quantity   Int
+  price      Int      // 单价(以分为单位)
+  totalPrice Int      @map("total_price") // 总价(以分为单位)
+  specInfo   String?  @map("spec_info") // 规格信息快照 (JSON字符串)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // 关联关系
+  order Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  sku   ProductSku @relation(fields: [skuId], references: [id])
+
+  @@map("order_items")
+}
+
+// 地址表
+model Address {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  name      String // 收货人
+  phone     String
+  province  String
+  city      String
+  district  String
+  detail    String // 详细地址
+  isDefault Boolean  @default(false) @map("is_default")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // 关联关系
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
+}
+
+// 优惠券表
+model Coupon {
+  id            String   @id @default(cuid())
+  title         String
+  description   String?
+  type          Int // 1: 满减券, 2: 折扣券
+  discountValue Int      @map("discount_value") // 优惠金额(以分为单位)或折扣比例(乘以100)
+  minAmount     Int      @default(0) @map("min_amount") // 最小使用金额(以分为单位)
+  startTime     DateTime @map("start_time")
+  endTime       DateTime @map("end_time")
+  totalCount    Int      @map("total_count") // 总发放量
+  usedCount     Int      @default(0) @map("used_count") // 已使用量
+  status        Int      @default(1) // 1: 启用, 0: 禁用
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // 关联关系
+  userCoupons UserCoupon[]
+
+  @@map("coupons")
+}
+
+// 用户优惠券表
+model UserCoupon {
+  id       String    @id @default(cuid())
+  userId   String    @map("user_id")
+  couponId String    @map("coupon_id")
+  status   Int       @default(0) @map("status") // 0: 未使用, 1: 已使用, 2: 已过期
+  usedAt   DateTime? @map("used_at")
+  orderId  String?   @map("order_id") // 使用的订单ID
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // 关联关系
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coupon Coupon @relation(fields: [couponId], references: [id])
+
+  @@unique([userId, couponId])
+  @@map("user_coupons")
+}
+
+// 轮播图表
+model Banner {
+  id        String   @id @default(cuid())
+  title     String?
+  image     String
+  link      String? // 跳转链接
+  sortOrder Int      @default(0) @map("sort_order")
+  status    Int      @default(1) // 1: 启用, 0: 禁用
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("banners")
+}
+
+// 营销活动表
+model Activity {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  image       String?
+  startTime   DateTime @map("start_time")
+  endTime     DateTime @map("end_time")
+  status      Int      @default(1) // 1: 启用, 0: 禁用
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("activities")
+}

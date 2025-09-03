@@ -12,7 +12,23 @@ export function fetchGood(ID = 0) {
   if (config.useMock) {
     return mockFetchGood(ID);
   }
-  return new Promise((resolve) => {
-    resolve('real api');
+
+  // 调用真实API
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: `${config.apiBaseUrl}/products/${ID}`,
+      method: 'GET',
+      success: (res) => {
+        if (res.data.success) {
+          resolve(res.data.data);
+        } else {
+          reject(new Error('获取商品详情失败'));
+        }
+      },
+      fail: (err) => {
+        console.error('获取商品详情失败:', err);
+        reject(err);
+      }
+    });
   });
 }

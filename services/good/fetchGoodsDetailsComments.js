@@ -14,8 +14,14 @@ export function getGoodsDetailsCommentsCount(spuId = 0) {
   if (config.useMock) {
     return mockFetchGoodDetailsCommentsCount(spuId);
   }
+  // 返回默认评论数
   return new Promise((resolve) => {
-    resolve('real api');
+    resolve({
+      commentCount: 0,
+      badCount: 0,
+      middleCount: 0,
+      goodCount: 0,
+    });
   });
 }
 
@@ -31,7 +37,10 @@ export function getGoodsDetailsCommentList(spuId = 0) {
   if (config.useMock) {
     return mockFetchGoodDetailsCommentList(spuId);
   }
+  // 返回空的评论列表
   return new Promise((resolve) => {
-    resolve('real api');
+    resolve({
+      homePageComments: []
+    });
   });
 }

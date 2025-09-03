@@ -12,8 +12,24 @@ export function fetchCouponList(status = 'default') {
   if (config.useMock) {
     return mockFetchCoupon(status);
   }
-  return new Promise((resolve) => {
-    resolve('real api');
+
+  // 调用真实API
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: `${config.apiBaseUrl}/coupons?status=${status}&limit=20`,
+      method: 'GET',
+      success: (res) => {
+        if (res.data.success) {
+          resolve(res.data.data);
+        } else {
+          reject(new Error('获取优惠券列表失败'));
+        }
+      },
+      fail: (err) => {
+        console.error('获取优惠券列表失败:', err);
+        reject(err);
+      }
+    });
   });
 }
 

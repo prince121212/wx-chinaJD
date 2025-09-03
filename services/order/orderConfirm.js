@@ -40,8 +40,25 @@ export function fetchSettleDetail(params) {
     return mockFetchSettleDetail(params);
   }
 
+  // 返回空的结算数据结构
   return new Promise((resolve) => {
-    resolve('real api');
+    resolve({
+      data: {
+        storeGoodsList: [],
+        userAddress: null,
+        invoiceInfo: null,
+        couponsInfo: [],
+        logisticsInfo: {
+          logisticsType: 1,
+          logisticsName: '快递配送',
+          logisticsFee: 0,
+        },
+        totalGoodsAmount: 0,
+        totalAmount: 0,
+        totalDiscountAmount: 0,
+        finalPayAmount: 0,
+      }
+    });
   });
 }
 

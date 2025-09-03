@@ -12,7 +12,14 @@ export function fetchPromotion(ID = 0) {
   if (config.useMock) {
     return mockFetchPromotion(ID);
   }
+  // 返回空的促销数据结构
   return new Promise((resolve) => {
-    resolve('real api');
+    resolve({
+      list: [],
+      banner: '',
+      time: '',
+      showBannerDesc: '',
+      statusTag: ''
+    });
   });
 }

@@ -14,8 +14,45 @@ export function fetchOrders(params) {
     return mockFetchOrders(params);
   }
 
-  return new Promise((resolve) => {
-    resolve('real api');
+  // 调用真实API
+  return new Promise((resolve, reject) => {
+    const { parameter } = params || {}
+    const { pageSize = 10, pageNum = 1, orderStatus } = parameter || {}
+
+    let url = `${config.apiBaseUrl}/orders?page=${pageNum}&limit=${pageSize}`
+    if (orderStatus !== undefined && orderStatus !== -1) {
+      url += `&status=${orderStatus}`
+    }
+
+    wx.request({
+      url,
+      method: 'GET',
+      header: {
+        'authorization': 'user_test123' // 临时用户token
+      },
+      success: (res) => {
+        if (res.data.success) {
+          resolve({
+            data: {
+              orders: res.data.data.list || [],
+              total: res.data.data.total || 0
+            }
+          })
+        } else {
+          reject(new Error('获取订单列表失败'));
+        }
+      },
+      fail: (err) => {
+        console.error('获取订单列表失败:', err);
+        // 如果API调用失败，返回空列表
+        resolve({
+          data: {
+            orders: [],
+            total: 0
+          }
+        })
+      }
+    });
   });
 }
 
@@ -33,7 +70,30 @@ export function fetchOrdersCount(params) {
     return mockFetchOrdersCount(params);
   }
 
-  return new Promise((resolve) => {
-    resolve('real api');
+  // 调用真实API
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: `${config.apiBaseUrl}/orders/count`,
+      method: 'GET',
+      header: {
+        'authorization': 'user_test123' // 临时用户token
+      },
+      success: (res) => {
+        if (res.data.success) {
+          resolve({
+            data: res.data.data || []
+          })
+        } else {
+          reject(new Error('获取订单统计失败'));
+        }
+      },
+      fail: (err) => {
+        console.error('获取订单统计失败:', err);
+        // 如果API调用失败，返回空统计
+        resolve({
+          data: []
+        })
+      }
+    });
   });
 }

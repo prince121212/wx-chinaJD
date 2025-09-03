@@ -12,7 +12,23 @@ export function getCategoryList() {
   if (config.useMock) {
     return mockFetchGoodCategory();
   }
-  return new Promise((resolve) => {
-    resolve('real api');
+
+  // 调用真实API
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: `${config.apiBaseUrl}/categories`,
+      method: 'GET',
+      success: (res) => {
+        if (res.data.success) {
+          resolve(res.data.data);
+        } else {
+          reject(new Error('获取分类列表失败'));
+        }
+      },
+      fail: (err) => {
+        console.error('获取分类列表失败:', err);
+        reject(err);
+      }
+    });
   });
 }

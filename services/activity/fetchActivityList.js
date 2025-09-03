@@ -14,7 +14,8 @@ export function fetchActivityList(pageIndex = 1, pageSize = 20) {
     return mockFetchActivityList(pageIndex, pageSize);
   }
 
+  // 返回空的活动列表，因为我们还没有活动数据
   return new Promise((resolve) => {
-    resolve('real api');
+    resolve([]);
   });
 }
