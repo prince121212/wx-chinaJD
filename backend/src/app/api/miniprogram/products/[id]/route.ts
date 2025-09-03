@@ -142,8 +142,8 @@ export async function GET(
       const specMap = new Map()
       skus.forEach(sku => {
         if (sku.specs) {
-          const specInfo = JSON.parse(sku.specs)
-          specInfo.forEach(spec => {
+          const specInfo: Array<{ specId: string; specTitle?: string | null; specValueId: string; specValue?: string | null }> = JSON.parse(sku.specs)
+          specInfo.forEach((spec: { specId: string; specTitle?: string | null; specValueId: string; specValue?: string | null }) => {
             if (!specMap.has(spec.specId)) {
               specMap.set(spec.specId, {
                 specId: spec.specId,
@@ -152,7 +152,7 @@ export async function GET(
               })
             }
             const specGroup = specMap.get(spec.specId)
-            if (!specGroup.specValueList.find(v => v.specValueId === spec.specValueId)) {
+            if (!specGroup.specValueList.find((v: { specValueId: string }) => v.specValueId === spec.specValueId)) {
               specGroup.specValueList.push({
                 specValueId: spec.specValueId,
                 specId: spec.specId,

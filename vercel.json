@@ -1,12 +1,23 @@
 {
   "version": 2,
   "name": "wx-app-backend",
-  "functions": {
-    "backend/src/app/api/**/*.ts": {
-      "maxDuration": 30
-    }
-  },
+  "builds": [
+    { "src": "backend/package.json", "use": "@vercel/next" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "backend/$1" }
+  ],
   "env": {
-    "NODE_ENV": "production"
+    "DATABASE_URL": "@database_url",
+    "NEXT_PUBLIC_SUPABASE_URL": "@supabase_url",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase_anon_key",
+    "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_key",
+    "WECHAT_APPID": "@wechat_appid",
+    "WECHAT_SECRET": "@wechat_secret",
+    "STORAGE_ENDPOINT": "@storage_endpoint",
+    "STORAGE_ACCESS_KEY": "@storage_access_key",
+    "STORAGE_SECRET_KEY": "@storage_secret_key",
+    "STORAGE_BUCKET": "@storage_bucket",
+    "STORAGE_PUBLIC_URL": "@storage_public_url"
   }
 }
