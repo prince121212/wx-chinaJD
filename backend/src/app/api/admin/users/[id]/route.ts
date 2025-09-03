@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 
-// 获取用户详情（管理后台）
+// 获取用户详情（管理后台）- 暂时返回模拟数据
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -9,91 +8,28 @@ export async function GET(
   try {
     const userId = params.id
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        openid: true,
-        nickname: true,
-        avatarUrl: true,
-        phone: true,
-        gender: true,
-        createdAt: true,
-        addresses: {
-          select: {
-            id: true,
-            name: true,
-            phone: true,
-            province: true,
-            city: true,
-            district: true,
-            detail: true,
-            isDefault: true,
-            createdAt: true,
-          },
-          orderBy: { isDefault: 'desc' }
-        },
-        orders: {
-          select: {
-            id: true,
-            orderNo: true,
-            status: true,
-            totalAmount: true,
-            actualAmount: true,
-            createdAt: true,
-          },
-          orderBy: { createdAt: 'desc' },
-          take: 10
-        }
-      }
-    })
-
-    if (!user) {
-      return NextResponse.json(
-        { success: false, msg: '用户不存在' },
-        { status: 404 }
-      )
-    }
-
-    // 计算用户统计信息
-    const [orderStats, couponCount] = await Promise.all([
-      prisma.order.groupBy({
-        by: ['status'],
-        where: { userId },
-        _count: { _all: true },
-        _sum: { actualAmount: true }
-      }),
-      prisma.userCoupon.count({
-        where: { userId, status: 0 }
-      })
-    ])
-
-    const totalAmount = orderStats.reduce(
-      (sum, stat) => sum + Number(stat._sum.actualAmount || 0),
-      0
-    )
-
-    const formattedUser = {
-      ...user,
-      orders: user.orders.map(order => ({
-        ...order,
-        totalAmount: Number(order.totalAmount),
-        actualAmount: Number(order.actualAmount),
-      })),
+    // 暂时返回模拟用户数据
+    const mockUser = {
+      id: userId,
+      openid: 'mock_openid',
+      nickname: '测试用户',
+      avatarUrl: 'https://pub-7d345f4cf2334fce864509d66ec976f3.r2.dev/JD/victoria-druc-qAYoFgD_-5E-unsplash.jpg',
+      phone: '138****8888',
+      gender: 1,
+      createdAt: new Date().toISOString(),
+      addresses: [],
+      orders: [],
       statistics: {
-        totalOrders: user.orders.length,
-        totalAmount,
-        availableCoupons: couponCount,
-        statusCounts: orderStats.map(stat => ({
-          status: stat.status,
-          count: stat._count._all
-        }))
+        totalOrders: 0,
+        totalAmount: 0,
+        availableCoupons: 0,
+        statusCounts: []
       }
     }
 
     return NextResponse.json({
       success: true,
-      data: formattedUser
+      data: mockUser
     })
   } catch (error) {
     console.error('Get user detail error:', error)
