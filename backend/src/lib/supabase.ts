@@ -96,11 +96,34 @@ export class SupabaseService {
   // 获取产品列表
   static async getProducts(page: number = 1, limit: number = 10) {
     try {
+      // 首先获取总数
+      const { count: totalCount, error: countError } = await supabase
+        .from('Product')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 1)
+
+      if (countError) {
+        throw countError
+      }
+
+      const total = totalCount || 0
       const offset = (page - 1) * limit
 
-      const { data, error, count } = await supabase
+      // 如果请求的页面超出范围，返回空结果
+      if (offset >= total && total > 0) {
+        return {
+          products: [],
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit)
+        }
+      }
+
+      // 获取数据
+      const { data, error } = await supabase
         .from('Product')
-        .select('*', { count: 'exact' })
+        .select('*')
         .eq('status', 1)
         .order('sortOrder', { ascending: true })
         .order('id', { ascending: true })
@@ -112,10 +135,10 @@ export class SupabaseService {
 
       return {
         products: data || [],
-        total: count || 0,
+        total,
         page,
         limit,
-        totalPages: Math.ceil((count || 0) / limit)
+        totalPages: Math.ceil(total / limit)
       }
     } catch (error) {
       console.error('获取产品列表失败:', error)

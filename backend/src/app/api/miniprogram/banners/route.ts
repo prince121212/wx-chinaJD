@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
         break // 成功则跳出循环
       } catch (error) {
         retryCount++
-        console.log(`轮播图查询失败，重试 ${retryCount}/${maxRetries}:`, error.message)
+        console.log(`轮播图查询失败，重试 ${retryCount}/${maxRetries}:`, (error as any)?.message || error)
         if (retryCount >= maxRetries) {
           throw error
         }
@@ -26,11 +26,11 @@ export async function GET(request: NextRequest) {
     }
 
     console.log('Supabase查询结果:', {
-      轮播图数量: banners.length
+      轮播图数量: banners?.length || 0
     })
 
     // 转换数据格式以匹配小程序期望的格式
-    const formattedBanners = banners.map(banner => banner.image)
+    const formattedBanners = (banners || []).map(banner => banner.image)
 
     return NextResponse.json({
       success: true,

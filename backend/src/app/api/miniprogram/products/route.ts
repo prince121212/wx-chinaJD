@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
         break // 成功则跳出循环
       } catch (error) {
         retryCount++
-        console.log(`商品查询失败，重试 ${retryCount}/${maxRetries}:`, error.message)
+        console.log(`商品查询失败，重试 ${retryCount}/${maxRetries}:`, (error as any)?.message || error)
         if (retryCount >= maxRetries) {
           throw error
         }
@@ -34,13 +34,28 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const { products, total } = result
+    const { products, total } = result || { products: [], total: 0 }
     console.log('Supabase查询结果:', {
       total,
       page,
       limit,
       返回商品数量: products.length
     })
+
+    // 检查是否超出数据范围
+    if (page > 1 && products.length === 0 && total > 0) {
+      // 如果是第2页及以后，且没有数据，但总数大于0，说明已经到达末尾
+      return NextResponse.json({
+        success: true,
+        data: {
+          list: [],
+          total,
+          page,
+          limit,
+          hasMore: false,
+        }
+      })
+    }
 
     // 为每个产品获取SKU数据
     const formattedProducts = []
@@ -56,7 +71,7 @@ export async function GET(request: NextRequest) {
           break // 成功则跳出循环
         } catch (error) {
           skuRetryCount++
-          console.log(`SKU查询失败，重试 ${skuRetryCount}/${skuMaxRetries}:`, error.message)
+          console.log(`SKU查询失败，重试 ${skuRetryCount}/${skuMaxRetries}:`, (error as any)?.message || error)
           if (skuRetryCount >= skuMaxRetries) {
             console.log(`产品 ${product.id} 的SKU查询失败，使用空数组`)
             skus = [] // 如果SKU查询失败，使用空数组
