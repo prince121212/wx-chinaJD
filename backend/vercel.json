@@ -1,45 +1,10 @@
 {
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
   "functions": {
     "src/app/api/**/*.ts": {
       "runtime": "@vercel/node"
     }
-  },
-  "rewrites": [
-    {
-      "source": "/api/miniprogram/products/:id",
-      "destination": "/api/miniprogram/products/[id]"
-    },
-    {
-      "source": "/api/miniprogram/orders/:id",
-      "destination": "/api/miniprogram/orders/[id]"
-    },
-    {
-      "source": "/api/miniprogram/addresses/:id",
-      "destination": "/api/miniprogram/addresses/[id]"
-    },
-    {
-      "source": "/api/miniprogram/cart/:id",
-      "destination": "/api/miniprogram/cart/[id]"
-    },
-    {
-      "source": "/api/admin/products/:id",
-      "destination": "/api/admin/products/[id]"
-    },
-    {
-      "source": "/api/admin/users/:id",
-      "destination": "/api/admin/users/[id]"
-    },
-    {
-      "source": "/api/admin/orders/:id/status",
-      "destination": "/api/admin/orders/[id]/status"
-    },
-    {
-      "source": "/api/test/:id",
-      "destination": "/api/test/[id]"
-    },
-    {
-      "source": "/api/miniprogram/products/detail/:spuId",
-      "destination": "/api/miniprogram/products/detail/[spuId]"
-    }
-  ]
+  }
 }
