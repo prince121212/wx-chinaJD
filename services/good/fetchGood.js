@@ -13,10 +13,10 @@ export function fetchGood(ID = 0) {
     return mockFetchGood(ID);
   }
 
-  // 调用真实API
+  // 调用真实API - 使用新的商品详情接口
   return new Promise((resolve, reject) => {
     wx.request({
-      url: `${config.apiBaseUrl}/products/${ID}`,
+      url: `${config.apiBaseUrl}/product-detail?id=${ID}`,
       method: 'GET',
       success: (res) => {
         if (res.data.success) {
