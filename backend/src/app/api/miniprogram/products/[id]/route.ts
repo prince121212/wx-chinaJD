@@ -119,6 +119,13 @@ export async function GET(
     const spuId = params.id
     console.log('获取产品详情 - 使用Supabase:', { spuId, userAgent })
 
+    // 临时简化版本，直接返回mock数据进行测试
+    return NextResponse.json({
+      success: true,
+      data: { ...mockProductDetail, spuId }
+    })
+
+    /* 暂时注释掉复杂逻辑
     // 尝试从Supabase获取数据，如果失败则使用mock数据
     try {
       const product = await SupabaseService.getProductBySpuId(spuId)
