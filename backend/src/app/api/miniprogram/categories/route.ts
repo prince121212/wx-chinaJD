@@ -3,7 +3,9 @@ import { SupabaseService } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('获取分类数据 - 使用Supabase')
+    // 强制动态渲染
+    const userAgent = request.headers.get('user-agent') || 'unknown'
+    console.log('获取分类数据 - 使用Supabase', { userAgent })
 
     // 添加重试机制
     let categories = null
