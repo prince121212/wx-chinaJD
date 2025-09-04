@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // 获取订单详情 - 暂时返回模拟数据
 export async function GET(
   request: NextRequest,

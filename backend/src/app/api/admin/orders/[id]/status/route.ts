@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // 更新订单状态 - 暂时返回模拟响应，避免构建时Prisma初始化问题
 export async function PUT(
   request: NextRequest,

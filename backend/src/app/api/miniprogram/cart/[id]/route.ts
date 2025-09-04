@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // 更新购物车项 - 暂时返回模拟响应
 export async function PUT(
   request: NextRequest,
