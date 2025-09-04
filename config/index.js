@@ -2,7 +2,7 @@ export const config = {
   /** 是否使用mock代替api返回 */
   useMock: false,
   /** API基础地址 */
-  apiBaseUrl: 'http://localhost:3000/api/miniprogram',
+  apiBaseUrl: 'https://china.wm985.top/api/miniprogram',
 };
 
 export const cdnBase =

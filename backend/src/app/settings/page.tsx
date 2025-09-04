@@ -60,9 +60,9 @@ export default function SettingsPage() {
                   </div>
                   <div>
                     <label className="text-sm font-medium">API Base URL</label>
-                    <input 
-                      className="w-full mt-1 px-3 py-2 border rounded-md" 
-                      defaultValue="http://localhost:3000/api/miniprogram"
+                    <input
+                      className="w-full mt-1 px-3 py-2 border rounded-md"
+                      defaultValue="https://china.wm985.top/api/miniprogram"
                       placeholder="请输入API地址"
                     />
                   </div>
