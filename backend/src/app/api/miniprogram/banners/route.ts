@@ -5,8 +5,25 @@ export async function GET(request: NextRequest) {
   try {
     console.log('获取轮播图数据 - 使用Supabase')
 
-    // 从Supabase查询轮播图
-    const banners = await SupabaseService.getBanners()
+    // 添加重试机制
+    let banners = null
+    let retryCount = 0
+    const maxRetries = 3
+
+    while (retryCount < maxRetries) {
+      try {
+        banners = await SupabaseService.getBanners()
+        break // 成功则跳出循环
+      } catch (error) {
+        retryCount++
+        console.log(`轮播图查询失败，重试 ${retryCount}/${maxRetries}:`, error.message)
+        if (retryCount >= maxRetries) {
+          throw error
+        }
+        // 等待1秒后重试
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      }
+    }
 
     console.log('Supabase查询结果:', {
       轮播图数量: banners.length
@@ -21,18 +38,9 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Get banners error:', error)
-
-    // 如果Supabase查询失败，返回mock数据
-    console.log('Supabase查询失败，使用mock数据')
-    const mockBanners = [
-      'https://tdesign.gtimg.com/miniprogram/template/retail/home/v2/banner1.png',
-      'https://tdesign.gtimg.com/miniprogram/template/retail/home/v2/banner2.png',
-      'https://tdesign.gtimg.com/miniprogram/template/retail/home/v2/banner3.png',
-    ]
-
-    return NextResponse.json({
-      success: true,
-      data: mockBanners
-    })
+    return NextResponse.json(
+      { success: false, msg: '获取轮播图失败' },
+      { status: 500 }
+    )
   }
 }

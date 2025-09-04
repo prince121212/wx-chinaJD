@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 
-// 获取订单详情
+// 获取订单详情 - 暂时返回模拟数据
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -15,63 +14,42 @@ export async function GET(
       )
     }
 
-    const userId = token.replace('user_', '')
     const orderId = params.id
 
-    const order = await prisma.order.findFirst({
-      where: { id: orderId, userId },
-      include: {
-        orderItems: {
-          include: {
-            sku: {
-              include: {
-                product: {
-                  select: {
-                    title: true,
-                    primaryImage: true,
-                  }
-                }
-              }
-            }
+    // 暂时返回模拟订单数据
+    const mockOrder = {
+      id: orderId,
+      orderNo: `ORDER${Date.now()}`,
+      status: 2, // 已付款
+      totalAmount: 299.00,
+      discountAmount: 0.00,
+      actualAmount: 299.00,
+      addressInfo: {
+        name: '张三',
+        phone: '138****8888',
+        address: '北京市朝阳区xxx街道xxx号'
+      },
+      remark: '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      items: [
+        {
+          id: 'item_1',
+          quantity: 1,
+          price: 299.00,
+          totalPrice: 299.00,
+          specInfo: '白色 M',
+          product: {
+            title: '白色短袖连衣裙',
+            image: 'https://tdesign.gtimg.com/miniprogram/template/retail/goods/nz-09a.png'
           }
         }
-      }
-    })
-
-    if (!order) {
-      return NextResponse.json(
-        { success: false, msg: '订单不存在' },
-        { status: 404 }
-      )
-    }
-
-    const formattedOrder = {
-      id: order.id,
-      orderNo: order.orderNo,
-      status: order.status,
-      totalAmount: Number(order.totalAmount),
-      discountAmount: Number(order.discountAmount),
-      actualAmount: Number(order.actualAmount),
-      addressInfo: order.addressInfo,
-      remark: order.remark,
-      createdAt: order.createdAt,
-      updatedAt: order.updatedAt,
-      items: order.orderItems.map(item => ({
-        id: item.id,
-        quantity: item.quantity,
-        price: Number(item.price),
-        totalPrice: Number(item.totalPrice),
-        specInfo: item.specInfo,
-        product: {
-          title: item.sku.product.title,
-          image: item.sku.product.primaryImage,
-        }
-      }))
+      ]
     }
 
     return NextResponse.json({
       success: true,
-      data: formattedOrder
+      data: mockOrder
     })
   } catch (error) {
     console.error('Get order detail error:', error)
@@ -82,7 +60,7 @@ export async function GET(
   }
 }
 
-// 更新订单状态
+// 更新订单状态 - 暂时返回模拟响应
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -96,58 +74,18 @@ export async function PUT(
       )
     }
 
-    const userId = token.replace('user_', '')
     const orderId = params.id
     const { action } = await request.json()
 
-    const order = await prisma.order.findFirst({
-      where: { id: orderId, userId }
-    })
-
-    if (!order) {
+    // 验证操作类型
+    if (!['pay', 'cancel', 'confirm'].includes(action)) {
       return NextResponse.json(
-        { success: false, msg: '订单不存在' },
-        { status: 404 }
-      )
-    }
-
-    let newStatus = order.status
-
-    switch (action) {
-      case 'pay':
-        if (order.status === 1) { // 待付款
-          newStatus = 2 // 已付款
-        }
-        break
-      case 'cancel':
-        if (order.status === 1) { // 待付款
-          newStatus = 5 // 已取消
-        }
-        break
-      case 'confirm':
-        if (order.status === 3) { // 已发货
-          newStatus = 4 // 已完成
-        }
-        break
-      default:
-        return NextResponse.json(
-          { success: false, msg: '无效的操作' },
-          { status: 400 }
-        )
-    }
-
-    if (newStatus === order.status) {
-      return NextResponse.json(
-        { success: false, msg: '订单状态不允许此操作' },
+        { success: false, msg: '无效的操作' },
         { status: 400 }
       )
     }
 
-    await prisma.order.update({
-      where: { id: orderId },
-      data: { status: newStatus }
-    })
-
+    // 暂时返回模拟成功响应
     return NextResponse.json({
       success: true,
       msg: '操作成功'

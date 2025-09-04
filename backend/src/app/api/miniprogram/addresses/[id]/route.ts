@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 
-// 更新地址
+// 更新地址 - 暂时返回模拟响应
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -15,45 +14,23 @@ export async function PUT(
       )
     }
 
-    const userId = token.replace('user_', '')
     const addressId = params.id
     const { name, phone, province, city, district, detail, isDefault } = await request.json()
 
-    const address = await prisma.address.findFirst({
-      where: { id: addressId, userId }
-    })
-
-    if (!address) {
-      return NextResponse.json(
-        { success: false, msg: '地址不存在' },
-        { status: 404 }
-      )
-    }
-
-    // 如果设置为默认地址，需要先取消其他默认地址
-    if (isDefault) {
-      await prisma.address.updateMany({
-        where: { userId, isDefault: true, id: { not: addressId } },
-        data: { isDefault: false }
-      })
-    }
-
-    const updatedAddress = await prisma.address.update({
-      where: { id: addressId },
-      data: {
-        name: name || address.name,
-        phone: phone || address.phone,
-        province: province || address.province,
-        city: city || address.city,
-        district: district || address.district,
-        detail: detail || address.detail,
-        isDefault: isDefault !== undefined ? isDefault : address.isDefault
-      }
-    })
-
+    // 暂时返回模拟更新成功响应
     return NextResponse.json({
       success: true,
-      data: updatedAddress
+      data: {
+        id: addressId,
+        name,
+        phone,
+        province,
+        city,
+        district,
+        detail,
+        isDefault: !!isDefault,
+        updatedAt: new Date().toISOString()
+      }
     })
   } catch (error) {
     console.error('Update address error:', error)
@@ -64,7 +41,7 @@ export async function PUT(
   }
 }
 
-// 删除地址
+// 删除地址 - 暂时返回模拟响应
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -78,24 +55,9 @@ export async function DELETE(
       )
     }
 
-    const userId = token.replace('user_', '')
     const addressId = params.id
 
-    const address = await prisma.address.findFirst({
-      where: { id: addressId, userId }
-    })
-
-    if (!address) {
-      return NextResponse.json(
-        { success: false, msg: '地址不存在' },
-        { status: 404 }
-      )
-    }
-
-    await prisma.address.delete({
-      where: { id: addressId }
-    })
-
+    // 暂时返回模拟删除成功响应
     return NextResponse.json({
       success: true,
       msg: '删除成功'

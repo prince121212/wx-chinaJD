@@ -14,8 +14,26 @@ export async function GET(request: NextRequest) {
 
     console.log('API请求参数 - 使用Supabase:', { page, limit, categoryId, keyword })
 
-    // 从Supabase获取产品数据
-    const result = await SupabaseService.getProducts(page, limit)
+    // 从Supabase获取产品数据，添加重试机制
+    let result = null
+    let retryCount = 0
+    const maxRetries = 3
+
+    while (retryCount < maxRetries) {
+      try {
+        result = await SupabaseService.getProducts(page, limit)
+        break // 成功则跳出循环
+      } catch (error) {
+        retryCount++
+        console.log(`商品查询失败，重试 ${retryCount}/${maxRetries}:`, error.message)
+        if (retryCount >= maxRetries) {
+          throw error
+        }
+        // 等待1秒后重试
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      }
+    }
+
     const { products, total } = result
     console.log('Supabase查询结果:', {
       total,
@@ -27,7 +45,27 @@ export async function GET(request: NextRequest) {
     // 为每个产品获取SKU数据
     const formattedProducts = []
     for (const product of products) {
-      const skus = await SupabaseService.getProductSkus(product.id)
+      // 获取SKU数据，添加重试机制
+      let skus = []
+      let skuRetryCount = 0
+      const skuMaxRetries = 3
+
+      while (skuRetryCount < skuMaxRetries) {
+        try {
+          skus = await SupabaseService.getProductSkus(product.id)
+          break // 成功则跳出循环
+        } catch (error) {
+          skuRetryCount++
+          console.log(`SKU查询失败，重试 ${skuRetryCount}/${skuMaxRetries}:`, error.message)
+          if (skuRetryCount >= skuMaxRetries) {
+            console.log(`产品 ${product.id} 的SKU查询失败，使用空数组`)
+            skus = [] // 如果SKU查询失败，使用空数组
+            break
+          }
+          // 等待500ms后重试
+          await new Promise(resolve => setTimeout(resolve, 500))
+        }
+      }
       const images = product.images ? JSON.parse(product.images) : []
 
       // 计算价格范围
@@ -98,22 +136,9 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Get products error:', error)
-
-    // 如果Supabase查询失败，返回空数据
-    const { searchParams } = new URL(request.url)
-    let page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '10')
-    if (page < 1) page = 1
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        list: [],
-        total: 0,
-        page,
-        limit,
-        hasMore: false,
-      }
-    })
+    return NextResponse.json(
+      { success: false, msg: '获取商品列表失败' },
+      { status: 500 }
+    )
   }
 }

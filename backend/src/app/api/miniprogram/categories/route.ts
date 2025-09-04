@@ -5,8 +5,25 @@ export async function GET(request: NextRequest) {
   try {
     console.log('获取分类数据 - 使用Supabase')
 
-    // 从Supabase查询分类
-    const categories = await SupabaseService.getCategories()
+    // 添加重试机制
+    let categories = null
+    let retryCount = 0
+    const maxRetries = 3
+
+    while (retryCount < maxRetries) {
+      try {
+        categories = await SupabaseService.getCategories()
+        break // 成功则跳出循环
+      } catch (error) {
+        retryCount++
+        console.log(`分类查询失败，重试 ${retryCount}/${maxRetries}:`, error.message)
+        if (retryCount >= maxRetries) {
+          throw error
+        }
+        // 等待1秒后重试
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      }
+    }
 
     console.log('Supabase查询结果:', {
       分类数量: categories.length
@@ -39,53 +56,9 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Get categories error:', error)
-
-    // 如果Supabase查询失败，返回mock数据
-    console.log('Supabase查询失败，使用mock数据')
-    const mockCategories = [
-      {
-        groupId: '24948',
-        name: '女装',
-        thumbnail: 'https://tdesign.gtimg.com/miniprogram/template/retail/category/category-default.png',
-        children: [
-          {
-            groupId: '249481',
-            name: '女装',
-            thumbnail: 'https://tdesign.gtimg.com/miniprogram/template/retail/category/category-default.png',
-            children: [
-              {
-                groupId: '249480',
-                name: '连衣裙',
-                thumbnail: 'https://tdesign.gtimg.com/miniprogram/template/retail/classify/img-9.png',
-              },
-            ],
-          },
-        ],
-      },
-      {
-        groupId: '24949',
-        name: '男装',
-        thumbnail: 'https://tdesign.gtimg.com/miniprogram/template/retail/category/category-default.png',
-        children: [
-          {
-            groupId: '249482',
-            name: '男装',
-            thumbnail: 'https://tdesign.gtimg.com/miniprogram/template/retail/category/category-default.png',
-            children: [
-              {
-                groupId: '249481',
-                name: 'T恤',
-                thumbnail: 'https://tdesign.gtimg.com/miniprogram/template/retail/classify/img-1.png',
-              },
-            ],
-          },
-        ],
-      },
-    ]
-
-    return NextResponse.json({
-      success: true,
-      data: mockCategories
-    })
+    return NextResponse.json(
+      { success: false, msg: '获取分类失败' },
+      { status: 500 }
+    )
   }
 }

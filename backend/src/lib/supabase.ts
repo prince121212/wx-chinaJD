@@ -1,18 +1,15 @@
 import { createClient } from '@supabase/supabase-js'
-import { PrismaClient } from '@prisma/client'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
+// 创建Supabase客户端
 export const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     autoRefreshToken: false,
     persistSession: false
   }
 })
-
-// 使用Prisma直连PostgreSQL作为备用方案
-const prisma = new PrismaClient()
 
 // 数据访问层接口
 export interface Product {
@@ -121,32 +118,8 @@ export class SupabaseService {
         totalPages: Math.ceil((count || 0) / limit)
       }
     } catch (error) {
-      console.log('Supabase REST API失败，使用Prisma直连:', (error as any)?.message || error)
-
-      // 使用Prisma作为备用方案
-      const skip = (page - 1) * limit
-      const [products, total] = await Promise.all([
-        prisma.product.findMany({
-          where: { status: 1 },
-          orderBy: [
-            { sortOrder: 'asc' },
-            { id: 'asc' }
-          ],
-          skip,
-          take: limit
-        }),
-        prisma.product.count({
-          where: { status: 1 }
-        })
-      ])
-
-      return {
-        products,
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit)
-      }
+      console.error('获取产品列表失败:', error)
+      throw error
     }
   }
 
@@ -166,15 +139,8 @@ export class SupabaseService {
 
       return data
     } catch (error) {
-      console.log('Supabase REST API失败，使用Prisma直连:', (error as any)?.message || error)
-
-      // 使用Prisma作为备用方案
-      return await prisma.product.findFirst({
-        where: {
-          spuId,
-          status: 1
-        }
-      })
+      console.error('获取产品详情失败:', error)
+      throw error
     }
   }
 
@@ -194,16 +160,8 @@ export class SupabaseService {
 
       return data || []
     } catch (error) {
-      console.log('Supabase REST API失败，使用Prisma直连:', (error as any)?.message || error)
-
-      // 使用Prisma作为备用方案
-      return await prisma.productSku.findMany({
-        where: {
-          productId: String(productId),
-          status: 1
-        },
-        orderBy: { id: 'asc' }
-      })
+      console.error('获取产品SKU失败:', error)
+      throw error
     }
   }
 
@@ -223,16 +181,8 @@ export class SupabaseService {
 
       return data || []
     } catch (error) {
-      console.log('Supabase REST API失败，使用Prisma直连:', (error as any)?.message || error)
-
-      // 使用Prisma作为备用方案
-      return await prisma.category.findMany({
-        where: { status: 1 },
-        orderBy: [
-          { sortOrder: 'asc' },
-          { id: 'asc' }
-        ]
-      })
+      console.error('获取分类列表失败:', error)
+      throw error
     }
   }
 
@@ -252,16 +202,8 @@ export class SupabaseService {
 
       return data || []
     } catch (error) {
-      console.log('Supabase REST API失败，使用Prisma直连:', (error as any)?.message || error)
-
-      // 使用Prisma作为备用方案
-      return await prisma.banner.findMany({
-        where: { status: 1 },
-        orderBy: [
-          { sortOrder: 'asc' },
-          { id: 'asc' }
-        ]
-      })
+      console.error('获取轮播图列表失败:', error)
+      throw error
     }
   }
 
@@ -281,14 +223,8 @@ export class SupabaseService {
 
       return data || []
     } catch (error) {
-      console.log('Supabase REST API失败，使用Prisma直连:', (error as any)?.message || error)
-
-      // 使用Prisma作为备用方案
-      return await prisma.coupon.findMany({
-        where: { status: 1 },
-        orderBy: { id: 'asc' },
-        take: limit
-      })
+      console.error('获取优惠券列表失败:', error)
+      throw error
     }
   }
 }
