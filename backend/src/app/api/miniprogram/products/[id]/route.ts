@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { SupabaseService } from '@/lib/supabase'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 // Mock商品详情数据
 const mockProductDetail = {
   saasId: '88888888',
