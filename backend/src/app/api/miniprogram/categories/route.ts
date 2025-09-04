@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     })
 
     // 转换数据格式以匹配小程序期望的格式
-    const formattedCategories = (categories || []).map(category => ({
+    const formattedCategories = (categories || []).map((category: any) => ({
       groupId: category.id,
       name: category.name,
       thumbnail: category.image,

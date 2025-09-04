@@ -84,13 +84,13 @@ export async function GET(request: NextRequest) {
       const images = product.images ? JSON.parse(product.images) : []
 
       // 计算价格范围
-      const prices = skus.map(sku => parseFloat(sku.price))
-      const salePrices = skus.map(sku => sku.salePrice ? parseFloat(sku.salePrice) : parseFloat(sku.price))
+      const prices = skus.map((sku: any) => parseFloat(sku.price))
+      const salePrices = skus.map((sku: any) => sku.salePrice ? parseFloat(sku.salePrice) : parseFloat(sku.price))
       const minPrice = Math.min(...prices)
       const maxPrice = Math.max(...prices)
       const minSalePrice = Math.min(...salePrices)
       const maxSalePrice = Math.max(...salePrices)
-      const totalStock = skus.reduce((sum, sku) => sum + sku.stock, 0)
+      const totalStock = skus.reduce((sum: number, sku: any) => sum + sku.stock, 0)
 
       const formattedProduct = {
         saasId: product.saasId || '88888888',
@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
         isPutOnSale: product.status,
         categoryIds: product.categoryId ? [product.categoryId] : [],
         specList: [],
-        skuList: skus.map(sku => ({
+        skuList: skus.map((sku: any) => ({
           skuId: sku.skuId,
           skuImage: sku.image || product.primaryImage,
           specInfo: sku.specs ? JSON.parse(sku.specs) : [],

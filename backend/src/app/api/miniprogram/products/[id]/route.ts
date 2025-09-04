@@ -134,13 +134,13 @@ export async function GET(
       const skus = await SupabaseService.getProductSkus(product.id)
 
       // 转换为mock数据格式
-      const prices = skus.map(sku => parseFloat(sku.price))
-      const salePrices = skus.map(sku => sku.salePrice ? parseFloat(sku.salePrice) : parseFloat(sku.price))
+      const prices = skus.map((sku: any) => parseFloat(sku.price))
+      const salePrices = skus.map((sku: any) => sku.salePrice ? parseFloat(sku.salePrice) : parseFloat(sku.price))
       const images = product.images ? JSON.parse(product.images) : [product.primaryImage]
 
       // 从SKU规格信息中提取specList
       const specMap = new Map()
-      skus.forEach(sku => {
+      skus.forEach((sku: any) => {
         if (sku.specs) {
           const specInfo: Array<{ specId: string; specTitle?: string | null; specValueId: string; specValue?: string | null }> = JSON.parse(sku.specs)
           specInfo.forEach((spec: { specId: string; specTitle?: string | null; specValueId: string; specValue?: string | null }) => {
@@ -178,12 +178,12 @@ export async function GET(
         minLinePrice: Math.min(...salePrices),
         maxSalePrice: Math.max(...prices),
         maxLinePrice: Math.max(...salePrices),
-        spuStockQuantity: skus.reduce((sum, sku) => sum + sku.stock, 0),
+        spuStockQuantity: skus.reduce((sum: number, sku: any) => sum + sku.stock, 0),
         soldNum: product.soldCount || 0,
         isPutOnSale: product.status,
         categoryIds: product.categoryId ? [product.categoryId] : [],
         specList: Array.from(specMap.values()),
-        skuList: skus.map(sku => ({
+        skuList: skus.map((sku: any) => ({
           skuId: sku.skuId,
           skuImage: sku.image || product.primaryImage,
           specInfo: sku.specs ? JSON.parse(sku.specs) : [],

@@ -1,15 +1,31 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+// 延迟初始化Supabase客户端
+let supabaseInstance: any = null
 
-// 创建Supabase客户端
-export const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
+function getSupabaseClient() {
+  if (!supabaseInstance) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.warn('Supabase环境变量未配置，使用模拟模式')
+      return null
+    }
+
+    supabaseInstance = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    })
   }
-})
+
+  return supabaseInstance
+}
+
+// 导出获取客户端的函数，而不是客户端实例
+export { getSupabaseClient }
 
 // 数据访问层接口
 export interface Product {
@@ -96,8 +112,20 @@ export class SupabaseService {
   // 获取产品列表
   static async getProducts(page: number = 1, limit: number = 10) {
     try {
+      const client = getSupabaseClient()
+      if (!client) {
+        // 如果Supabase不可用，返回空结果
+        return {
+          products: [],
+          total: 0,
+          page,
+          limit,
+          totalPages: 0
+        }
+      }
+
       // 首先获取总数
-      const { count: totalCount, error: countError } = await supabase
+      const { count: totalCount, error: countError } = await client
         .from('Product')
         .select('*', { count: 'exact', head: true })
         .eq('status', 1)
@@ -121,7 +149,7 @@ export class SupabaseService {
       }
 
       // 获取数据
-      const { data, error } = await supabase
+      const { data, error } = await client
         .from('Product')
         .select('*')
         .eq('status', 1)
@@ -149,7 +177,12 @@ export class SupabaseService {
   // 根据SPU ID获取产品详情
   static async getProductBySpuId(spuId: string) {
     try {
-      const { data, error } = await supabase
+      const client = getSupabaseClient()
+      if (!client) {
+        return null
+      }
+
+      const { data, error } = await client
         .from('Product')
         .select('*')
         .eq('spuId', spuId)
@@ -170,7 +203,12 @@ export class SupabaseService {
   // 获取产品的SKU列表
   static async getProductSkus(productId: number | string) {
     try {
-      const { data, error } = await supabase
+      const client = getSupabaseClient()
+      if (!client) {
+        return []
+      }
+
+      const { data, error } = await client
         .from('ProductSku')
         .select('*')
         .eq('productId', productId)
@@ -191,7 +229,12 @@ export class SupabaseService {
   // 获取分类列表
   static async getCategories() {
     try {
-      const { data, error } = await supabase
+      const client = getSupabaseClient()
+      if (!client) {
+        return []
+      }
+
+      const { data, error } = await client
         .from('Category')
         .select('*')
         .eq('status', 1)
@@ -212,7 +255,12 @@ export class SupabaseService {
   // 获取轮播图列表
   static async getBanners() {
     try {
-      const { data, error } = await supabase
+      const client = getSupabaseClient()
+      if (!client) {
+        return []
+      }
+
+      const { data, error } = await client
         .from('Banner')
         .select('*')
         .eq('status', 1)
@@ -233,7 +281,12 @@ export class SupabaseService {
   // 获取优惠券列表
   static async getCoupons(limit: number = 10) {
     try {
-      const { data, error } = await supabase
+      const client = getSupabaseClient()
+      if (!client) {
+        return []
+      }
+
+      const { data, error } = await client
         .from('Coupon')
         .select('*')
         .eq('status', 1)

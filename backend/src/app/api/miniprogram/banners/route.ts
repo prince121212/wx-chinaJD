@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     })
 
     // 转换数据格式以匹配小程序期望的格式
-    const formattedBanners = (banners || []).map(banner => banner.image)
+    const formattedBanners = (banners || []).map((banner: any) => banner.image)
 
     return NextResponse.json({
       success: true,

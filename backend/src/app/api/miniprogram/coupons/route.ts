@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
 
     console.log('优惠券数量:', coupons.length)
 
-    const formattedCoupons = coupons.map(coupon => ({
+    const formattedCoupons = coupons.map((coupon: any) => ({
       id: coupon.id,
       title: coupon.title,
       description: coupon.description,
