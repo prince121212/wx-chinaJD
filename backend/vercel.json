@@ -10,7 +10,7 @@
   "rewrites": [
     {
       "source": "/api/miniprogram/products/:id",
-      "destination": "/api/miniprogram/product-detail?id=:id"
+      "destination": "/api/miniprogram/products?id=:id"
     }
   ]
 }

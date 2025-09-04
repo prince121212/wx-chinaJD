@@ -4,6 +4,32 @@ import { SupabaseService } from '@/lib/supabase'
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
+
+    // 检查是否是商品详情请求（通过id参数判断）
+    const productId = searchParams.get('id')
+    if (productId) {
+      // 重定向到工作的商品详情API
+      const baseUrl = request.url.split('/api/')[0]
+      const detailApiUrl = `${baseUrl}/api/miniprogram/product-detail?id=${productId}`
+
+      console.log('商品详情请求，重定向到:', detailApiUrl)
+
+      const response = await fetch(detailApiUrl, {
+        method: 'GET',
+        headers: {
+          'user-agent': request.headers.get('user-agent') || 'unknown',
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`商品详情API调用失败: ${response.status}`)
+      }
+
+      const data = await response.json()
+      return NextResponse.json(data)
+    }
+
+    // 商品列表请求的原有逻辑
     let page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
     const categoryId = searchParams.get('categoryId')
