@@ -19,6 +19,11 @@ const nextConfig = {
       },
     ]
   },
+  async rewrites() {
+    return [
+      { source: '/api/miniprogram/products/:id', destination: '/api/miniprogram/products?id=:id' },
+    ]
+  },
 }
 
 module.exports = nextConfig
