@@ -114,8 +114,10 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    // 强制动态渲染
+    const userAgent = request.headers.get('user-agent') || 'unknown'
     const spuId = params.id
-    console.log('获取产品详情 - 使用Supabase:', spuId)
+    console.log('获取产品详情 - 使用Supabase:', { spuId, userAgent })
 
     // 尝试从Supabase获取数据，如果失败则使用mock数据
     try {

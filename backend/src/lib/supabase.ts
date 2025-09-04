@@ -185,7 +185,7 @@ export class SupabaseService {
       const { data, error } = await client
         .from('Product')
         .select('*')
-        .eq('spuId', spuId)
+        .eq('spu_id', spuId)
         .eq('status', 1)
         .single()
 
