@@ -2,7 +2,7 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 
 async function testProductDetailAPI() {
   try {
-    console.log('=== 测试简化版商品详情API ===')
+    console.log('=== 测试商品详情API ===')
     
     // 测试存在的商品ID
     const productId = '135681624'
