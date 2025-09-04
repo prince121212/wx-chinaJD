@@ -15,7 +15,7 @@ export async function GET(
     const mockUser = {
       id: userId,
       openid: 'mock_openid',
-      nickname: '测试用户',
+      nickname: '幸运猫',
       avatarUrl: 'https://pub-7d345f4cf2334fce864509d66ec976f3.r2.dev/JD/victoria-druc-qAYoFgD_-5E-unsplash.jpg',
       phone: '138****8888',
       gender: 1,

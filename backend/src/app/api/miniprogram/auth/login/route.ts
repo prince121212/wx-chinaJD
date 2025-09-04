@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     // 返回模拟登录成功
     const user = {
       id: 'test_user_123',
-      nickname: userInfo?.nickName || '测试用户',
+      nickname: userInfo?.nickName || '幸运猫',
       avatarUrl: userInfo?.avatarUrl || 'https://pub-7d345f4cf2334fce864509d66ec976f3.r2.dev/JD/victoria-druc-qAYoFgD_-5E-unsplash.jpg',
       phone: null,
       gender: userInfo?.gender || 1,

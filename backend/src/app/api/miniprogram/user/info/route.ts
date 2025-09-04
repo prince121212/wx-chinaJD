@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     // 返回模拟用户信息
     const user = {
       id: 'test_user_123',
-      nickname: '测试用户',
+      nickname: '幸运猫',
       avatarUrl: 'https://pub-7d345f4cf2334fce864509d66ec976f3.r2.dev/JD/victoria-druc-qAYoFgD_-5E-unsplash.jpg',
       phone: '138****8888',
       gender: 1,
