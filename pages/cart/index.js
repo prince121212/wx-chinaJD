@@ -56,10 +56,14 @@ Page({
           isEmpty = false;
         }
       }
-      cartGroupData.invalidGoodItems = cartGroupData.invalidGoodItems.map((goods) => {
-        goods.originPrice = undefined;
-        return goods;
-      });
+      if (cartGroupData.invalidGoodItems && Array.isArray(cartGroupData.invalidGoodItems)) {
+        cartGroupData.invalidGoodItems = cartGroupData.invalidGoodItems.map((goods) => {
+          goods.originPrice = undefined;
+          return goods;
+        });
+      } else {
+        cartGroupData.invalidGoodItems = [];
+      }
       cartGroupData.isNotEmpty = !isEmpty;
       this.setData({ cartGroupData });
     });

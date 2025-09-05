@@ -30,10 +30,18 @@ Component({
       }
       const statusInfo = statusMap[couponDTO.status];
 
-      this.setData({
-        btnText: statusInfo.text,
-        btnTheme: statusInfo.theme,
-      });
+      if (statusInfo && statusInfo.text && statusInfo.theme) {
+        this.setData({
+          btnText: statusInfo.text,
+          btnTheme: statusInfo.theme,
+        });
+      } else {
+        // 设置默认值，防止undefined错误
+        this.setData({
+          btnText: '去使用',
+          btnTheme: 'primary',
+        });
+      }
     },
   },
 

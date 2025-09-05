@@ -83,9 +83,23 @@ Page({
     if (options.type === 'cart') {
       // 从购物车跳转过来时，获取传入的商品列表数据
       const goodsRequestListJson = wx.getStorageSync('order.goodsRequestList');
-      goodsRequestList = JSON.parse(goodsRequestListJson);
+      try {
+        if (goodsRequestListJson && goodsRequestListJson.trim() !== '') {
+          goodsRequestList = JSON.parse(goodsRequestListJson);
+        }
+      } catch (error) {
+        console.error('解析购物车商品列表JSON失败:', error);
+        goodsRequestList = [];
+      }
     } else if (typeof options.goodsRequestList === 'string') {
-      goodsRequestList = JSON.parse(options.goodsRequestList);
+      try {
+        if (options.goodsRequestList && options.goodsRequestList.trim() !== '') {
+          goodsRequestList = JSON.parse(options.goodsRequestList);
+        }
+      } catch (error) {
+        console.error('解析商品列表JSON失败:', error);
+        goodsRequestList = [];
+      }
     }
     //获取结算页请求数据列表
     const storeMap = {};
