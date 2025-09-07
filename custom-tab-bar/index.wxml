@@ -1,3 +1,5 @@
+<!-- 暂时隐藏tabbar -->
+<view style="display: none;">
 <t-tab-bar
  value="{{active}}"
  bindchange="onChange"
@@ -15,4 +17,5 @@
 		</view>
 	</t-tab-bar-item>
 </t-tab-bar>
+</view>
 

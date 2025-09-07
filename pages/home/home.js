@@ -123,14 +123,16 @@ Page({
   },
 
   navToActivityDetail({ detail }) {
-    // 暂时关闭banner点击事件，避免跳转到营销详情页
-    console.log('Banner点击事件已暂时关闭');
-    return;
+    const { index: promotionID = 0 } = detail || {};
+    wx.navigateTo({
+      url: `/pages/promotion/promotion-detail/index?promotion_id=${promotionID}`,
+    });
+  },
 
-    // 原来的跳转逻辑（已注释）
-    // const { index: promotionID = 0 } = detail || {};
-    // wx.navigateTo({
-    //   url: `/pages/promotion/promotion-detail/index?promotion_id=${promotionID}`,
-    // });
+  // 悬浮按钮点击事件
+  goToUserCenter() {
+    wx.switchTab({
+      url: '/pages/usercenter/index'
+    });
   },
 });

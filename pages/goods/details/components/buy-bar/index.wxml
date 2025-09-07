@@ -2,7 +2,8 @@
 	{{soldout ? '商品已下架' : '商品已售馨'}}
 </view>
 <view class="footer-cont flex flex-between wr-class">
-	<view class="flex flex-between bottom-operate-left" wx:if="{{jumpArray.length > 0}}">
+	<!-- 暂时隐藏购物车相关功能 -->
+	<!-- <view class="flex flex-between bottom-operate-left" wx:if="{{jumpArray.length > 0}}">
 		<view
 		  wx:for="{{jumpArray}}"
 		  wx:key="index"
@@ -20,13 +21,14 @@
 				<view class="operate-text">{{item.title}}</view>
 			</view>
 		</view>
-	</view>
+	</view> -->
 	<block wx:if="{{buttonType === 1}}">
-		<view class="flex buy-buttons">
-			<view class="bar-separately {{soldout || !isStock ? 'bar-addCart-disabled' : ''}}" bindtap="toAddCart">
+		<view class="flex buy-buttons" style="width: 100%;">
+			<!-- 暂时隐藏加入购物车按钮 -->
+			<!-- <view class="bar-separately {{soldout || !isStock ? 'bar-addCart-disabled' : ''}}" bindtap="toAddCart">
 				加入购物车
-			</view>
-			<view class="bar-buy {{soldout || !isStock ? 'bar-buyNow-disabled' : ''}}" bindtap="toBuyNow">
+			</view> -->
+			<view class="bar-buy {{soldout || !isStock ? 'bar-buyNow-disabled' : ''}}" bindtap="toBuyNow" style="width: 100%; border-radius: 40rpx;">
 				立即购买
 			</view>
 		</view>
