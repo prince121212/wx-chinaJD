@@ -24,10 +24,10 @@ const menuData = [
   ],
   [
     {
-      title: '帮助中心',
+      title: '我的店铺',
       tit: '',
       url: '',
-      type: 'help-center',
+      type: 'my-shop',
     },
     {
       title: '客服热线',
@@ -149,14 +149,8 @@ Page({
         this.openMakePhone();
         break;
       }
-      case 'help-center': {
-        Toast({
-          context: this,
-          selector: '#t-toast',
-          message: '你点击了帮助中心',
-          icon: '',
-          duration: 1000,
-        });
+      case 'my-shop': {
+        wx.switchTab({ url: '/pages/shop/index' });
         break;
       }
       case 'point': {

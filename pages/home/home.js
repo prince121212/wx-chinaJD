@@ -129,10 +129,5 @@ Page({
     });
   },
 
-  // 悬浮按钮点击事件
-  goToUserCenter() {
-    wx.switchTab({
-      url: '/pages/usercenter/index'
-    });
-  },
+
 });

@@ -1,0 +1,12 @@
+.floating-button {
+  position: fixed;
+  right: 20rpx;
+  bottom: 50rpx;
+  width: 80rpx;
+  height: 80rpx;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}

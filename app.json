@@ -1,5 +1,5 @@
 {
-  "pages": ["pages/home/home", "pages/category/index", "pages/cart/index", "pages/usercenter/index"],
+  "pages": ["pages/home/home", "pages/category/index", "pages/cart/index", "pages/shop/index", "pages/usercenter/index"],
   "subpackages": [
     {
       "root": "pages/user",
@@ -64,6 +64,10 @@
       {
         "pagePath": "pages/cart/index",
         "text": "购物车"
+      },
+      {
+        "pagePath": "pages/shop/index",
+        "text": "店铺"
       },
       {
         "pagePath": "pages/usercenter/index",

@@ -45,3 +45,6 @@
   </view>
 </t-popup>
 <t-toast id="t-toast" />
+
+<!-- 悬浮按钮 -->
+<floating-button currentPage="usercenter" />

@@ -15,6 +15,11 @@ export default [
     url: 'pages/cart/index',
   },
   {
+    icon: 'shop',
+    text: '店铺',
+    url: 'pages/shop/index',
+  },
+  {
     icon: 'person',
     text: '个人中心',
     url: 'pages/usercenter/index',

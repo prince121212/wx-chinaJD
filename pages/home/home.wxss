@@ -106,18 +106,4 @@ page {
   --td-tab-track-color: red;
 }
 
-/* 悬浮按钮样式 */
-.floating-button {
-  position: fixed;
-  right: 20rpx;
-  bottom: 50rpx;
-  width: 100rpx;
-  height: 100rpx;
-  background-color: #fa4126;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4rpx 12rpx rgba(250, 65, 38, 0.3);
-  z-index: 999;
-}
+
