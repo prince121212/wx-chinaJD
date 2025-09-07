@@ -1,3 +1,3 @@
-<view class="floating-button" bindtap="onTap">
-  <t-icon name="attic-filled" size="48rpx" color="#52c41a" />
+<view class="floating-button {{isAnimating ? 'rotating' : ''}}" bindtap="onTap">
+  <t-icon name="attic-filled" size="48rpx" color="{{iconColor}}" />
 </view>

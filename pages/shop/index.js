@@ -80,7 +80,7 @@ Page({
   },
 
   // 加载商品列表
-  loadGoodsList(fresh = false) {
+  async loadGoodsList(fresh = false) {
     if (fresh) {
       wx.pageScrollTo({
         scrollTop: 0,
@@ -95,30 +95,26 @@ Page({
       pageIndex = 0;
     }
 
-    return fetchGoodsList(pageIndex, pageSize)
-      .then((res) => {
-        this.setData({
-          goodsList: fresh ? res.spuList : this.data.goodsList.concat(res.spuList),
-          goodsListLoadStatus: res.spuList.length > 0 ? 0 : 2,
-        });
-
-        this.goodListPagination.index = pageIndex;
-        this.goodListPagination.status = res.spuList.length < pageSize ? 'nomore' : '';
-
-        return this.setData({ goodsListLoadStatus: 0 });
-      })
-      .catch((err) => {
-        this.setData({ goodsListLoadStatus: 3 });
-        return Promise.reject(err);
-      })
-      .finally(() => {
-        wx.stopPullDownRefresh && wx.stopPullDownRefresh();
+    try {
+      const nextList = await fetchGoodsList(pageIndex, pageSize);
+      this.setData({
+        goodsList: fresh ? nextList : this.data.goodsList.concat(nextList),
+        goodsListLoadStatus: 0,
       });
+
+      this.goodListPagination.index = pageIndex;
+      this.goodListPagination.num = pageSize;
+    } catch (err) {
+      console.error('获取商品列表失败:', err);
+      this.setData({ goodsListLoadStatus: 3 });
+    } finally {
+      wx.stopPullDownRefresh && wx.stopPullDownRefresh();
+    }
   },
 
   // Tab切换处理
   tabChangeHandle(e) {
-    this.privateData.tabIndex = e.detail.value;
+    this.privateData.tabIndex = e.detail;
     this.loadGoodsList(true);
   },
 

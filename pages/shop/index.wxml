@@ -15,8 +15,8 @@
 </view>
 
 <!-- 商品展示区域 -->
-<view class="shop-container">
-  <view class="shop-tabs">
+<view class="home-page-container">
+  <view class="home-page-tabs">
     <t-tabs
       t-class="t-tabs"
       t-class-active="tabs-external__active"
